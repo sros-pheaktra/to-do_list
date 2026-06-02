@@ -52,7 +52,7 @@ window.onload = () => {
         taskListContainer.innerHTML = tasks.map(task => 
             `
             <li data-id="${task.id}">
-                <p style="text-decoration: ${task.complete ? "line-through" : "none"}">
+                <p class="${task.complete ? "done" : ""}">
                     ${task.name}
                 </p>
                 <button class="completeBtn">Complete</button>
