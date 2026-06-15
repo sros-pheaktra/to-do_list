@@ -82,6 +82,17 @@ function render() {
   const total = tasks.length;
   const done = tasks.filter(t => t.complete).length;
   const active = total - done;
+  
+  const percentage =
+      total === 0 ? 0 :
+      (done / total) * 100;
+
+  document.querySelector(".progress-fill")
+      .style.width = `${percentage}%`;
+
+  document.getElementById("progress-text")
+      .textContent =
+      `${done} / ${total} completed`;
 
   statsRow.innerHTML = total === 0
     ? ''
@@ -135,5 +146,4 @@ list.addEventListener('click', e => {
 document.querySelectorAll('.filter-btn').forEach(b => {
   b.addEventListener('click', () => { filter = b.dataset.filter; render(); });
 });
-
 load();
