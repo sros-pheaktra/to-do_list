@@ -34,11 +34,50 @@ function load() {
 function save() {
   localStorage.setItem('todo_tasks_v1', JSON.stringify({ tasks, nextId }));
 }
+function getScheduledTime(text) {
+  const match = text.match(/\b(\d{1,2})(?::(\d{2}))?\s*(AM|PM)\b/i);
+
+  if (!match) {
+    return null;
+  }
+
+  let hour = parseInt(match[1]);
+  const minute = parseInt(match[2] || '0');
+  const period = match[3].toUpperCase();
+
+  // Convert to 24-hour format
+  if (period === 'PM' && hour !== 12) {
+    hour += 12;
+  }
+
+  if (period === 'AM' && hour === 12) {
+    hour = 0;
+  }
+
+  const scheduled = new Date();
+
+  scheduled.setHours(hour, minute, 0, 0);
+
+  // Add 2 hours
+  scheduled.setHours(scheduled.getHours() + 2);
+
+  return scheduled.getTime();
+}
 
 function addTask() {
   const name = input.value.trim();
   if (!name) { input.focus(); return; }
-  tasks.unshift({ id: nextId++, name, complete: false, date: Date.now() });
+
+  const scheduledAt = getScheduledTime(name);
+
+  tasks.unshift({
+    id: nextId++,
+    name,
+    complete: false,
+    date: Date.now(),
+    scheduledAt: scheduledAt
+  });
+
   input.value = '';
   save();
   render();
@@ -112,7 +151,9 @@ function render() {
           <svg class="check-icon" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg>
         </button>
         <span class="task-name">${escHtml(task.name)}</span>
-        <span class="task-meta">${formatTime(task.date)}</span>
+        <span class="task-meta">
+          ${task.scheduledAt ? formatTime(task.scheduledAt) : formatTime(task.date)}
+        </span>
         <button class="delete-btn" data-action="delete" aria-label="Delete task">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
             <line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/>
