@@ -58,8 +58,7 @@ function getScheduledTime(text) {
 
   scheduled.setHours(hour, minute, 0, 0);
 
-  // Add 2 hours
-  scheduled.setHours(scheduled.getHours() + 2);
+  scheduled.setHours(scheduled.getHours());
 
   return scheduled.getTime();
 }
